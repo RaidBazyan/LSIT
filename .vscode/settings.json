@@ -1,0 +1,6 @@
+{
+    "java.project.sourcePaths": [
+        "supply-chain-lsit-complete/src/main/java",
+        "amazon/src/main/java/com/lsit/amazon"
+    ]
+}
