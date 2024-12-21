@@ -18,14 +18,20 @@ public class Config {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests(auth -> auth
-                        .antMatchers("/", "/supplier/**", "/warehouse/**", "/delivery/**", "/customer/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .oauth2Login(oauth2 -> oauth2.defaultSuccessUrl("/"))
-                .logout(logout -> logout.logoutSuccessHandler(oidcLogoutSuccessHandler()));
-        return http.build();
-    }
+    http
+        .authorizeHttpRequests((authz) -> authz
+            .antMatchers("/", "/supplier/**", "/warehouse/**", "/delivery/**", "/customer/**")
+                .permitAll()
+            .anyRequest()
+                .authenticated()
+        )
+        .oauth2Login(oauth2 -> oauth2.defaultSuccessUrl("/"))
+        .logout(logout -> logout.logoutSuccessHandler(oidcLogoutSuccessHandler()));
+    return http.build();
+}
+}
+
+
 
     private OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler() {
         OidcClientInitiatedLogoutSuccessHandler successHandler =
