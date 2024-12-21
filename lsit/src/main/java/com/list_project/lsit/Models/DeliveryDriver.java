@@ -15,8 +15,8 @@ public class DeliveryDriver {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId(long currentId) {
+        this.id = currentId;
     }
 
     public String getName() {
@@ -26,4 +26,5 @@ public class DeliveryDriver {
     public void setName(String name) {
         this.name = name;
     }
+
 }
