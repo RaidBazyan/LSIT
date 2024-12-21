@@ -16,22 +16,19 @@ public class Config {
         this.clientRegistrationRepository = clientRegistrationRepository;
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    return http
-            .authorizeHttpRequests((authz) -> authz
-                    .antMatchers("/", "/supplier/**", "/warehouse/**", "/delivery/**", "/customer/**")
-                        .permitAll()
-                    .anyRequest()
-                        .authenticated()
-            )
-            .oauth2Login(oauth2 -> oauth2.defaultSuccessUrl("/"))
-            .logout(logout -> logout.logoutSuccessHandler(oidcLogoutSuccessHandler()))
-            .build();
-}
-
-
+        return http
+                .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/", "/supplier/**", "/warehouse/**", "/delivery/**", "/customer/**")
+                            .permitAll()
+                        .anyRequest()
+                            .authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2.defaultSuccessUrl("/"))
+                .logout(logout -> logout.logoutSuccessHandler(oidcLogoutSuccessHandler()))
+                .build();
+    }
 
     private OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler() {
         OidcClientInitiatedLogoutSuccessHandler successHandler =
