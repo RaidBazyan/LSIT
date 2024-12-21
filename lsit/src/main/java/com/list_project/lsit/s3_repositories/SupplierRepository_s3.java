@@ -18,7 +18,7 @@ import software.amazon.awssdk.services.s3.model.*;
 public class SupplierRepository_s3 {
 
     private static final String BUCKET = "lsit-project";
-    private static final String PREFIX = "supplier/";
+    private static final String PREFIX = "suppliers/";
     private static final String ACCESS_KEY = "AKIATG6MGQSAYOUKHH6Q"; 
     private static final String SECRET_KEY = "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"; 
     private final String ENDPOINT_URL = "https://s3.amazonaws.com";
