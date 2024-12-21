@@ -7,32 +7,32 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.list_project.lsit.Models.WarehouseManager;
 
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.*;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 @Repository
 public class WarehouseRepository_s3 {
 
     private static final String BUCKET = "lsit-project";
-    private static final String PREFIX = "warehouse/";
-    private static final String ACCESS_KEY = "AKIATG6MGQSAYOUKHH6Q"; 
-    private static final String SECRET_KEY = "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"; 
-    private final String ENDPOINT_URL = "https://s3.amazonaws.com";
+    private static final String PREFIX = "";
+    private static final String ACCESS_KEY = ""; 
+    private static final String SECRET_KEY = ""; 
+    private final String ENDPOINT_URL = "";
 
-    private S3Client s3client;
+    private final AmazonS3 s3Client;
 
     public WarehouseRepository_s3() {
-      AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(ACCESS_KEY, SECRET_KEY);
-      s3client = S3Client.builder()
-              .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
-              .endpointOverride(URI.create(ENDPOINT_URL))
-              .region(Region.EU_NORTH_1)
-              .build();
-  }
+        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(ACCESS_KEY, SECRET_KEY);
+        s3Client = AmazonS3ClientBuilder.standard()
+                .withRegion("eu-north-1")
+                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                .build();
+    }
 
     // Add a new WarehouseManager
     public void add(WarehouseManager manager) {
@@ -42,12 +42,7 @@ public class WarehouseRepository_s3 {
             String managerJson = objectMapper.writeValueAsString(manager);
 
             // Upload the manager to the S3 bucket
-            s3client.putObject(PutObjectRequest.builder()
-                    .bucket(BUCKET)
-                    .key(PREFIX + manager.getId()) // Use the manager ID as the key
-                    .build(),
-                    RequestBody.fromString(managerJson)
-            );
+            s3Client.putObject(BUCKET, PREFIX + manager.getId(), managerJson);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -55,13 +50,9 @@ public class WarehouseRepository_s3 {
 
     // Get a WarehouseManager by ID
     public WarehouseManager get(Long managerId) {
-                try {
-                    // Retrieve the object from S3
-                    var objectBytes = s3client.getObject(GetObjectRequest.builder()
-                            .bucket(BUCKET)
-                            .key(PREFIX + managerId) // Use the manager ID as the key
-                    .build()
-            ).readAllBytes();
+        try {
+            S3Object object = s3Client.getObject(BUCKET, PREFIX + managerId);
+            byte[] objectBytes = object.getObjectContent().readAllBytes();
 
             // Deserialize the object into a WarehouseManager
             ObjectMapper objectMapper = new ObjectMapper();
@@ -73,11 +64,7 @@ public class WarehouseRepository_s3 {
 
     // Remove a WarehouseManager by ID
     public void remove(String id) {
-        s3client.deleteObject(DeleteObjectRequest.builder()
-                .bucket(BUCKET)
-                .key(PREFIX + id) // Use the manager ID as the key
-                .build()
-        );
+        s3Client.deleteObject(BUCKET, PREFIX + id);
     }
 
     // Update a WarehouseManager
@@ -96,16 +83,12 @@ public class WarehouseRepository_s3 {
     // List all WarehouseManagers
     public List<WarehouseManager> list() {
         List<WarehouseManager> managers = new ArrayList<>();
-        List<S3Object> objects = s3client.listObjects(ListObjectsRequest.builder()
-                .bucket(BUCKET)
-                .prefix(PREFIX) // Optional: List objects with the specific prefix (directory)
-                .build()
-        ).contents();
+        List<S3ObjectSummary> objects = s3Client.listObjects(BUCKET).getObjectSummaries();
 
         // For each object in the bucket, retrieve and deserialize it
-        for (S3Object o : objects) {
+        for (S3ObjectSummary o : objects) {
             try {
-                String managerId = o.key().substring(PREFIX.length());
+                String managerId = o.getKey().substring(PREFIX.length());
                 WarehouseManager manager = get(Long.valueOf(managerId));
                 if (manager != null) {
                     managers.add(manager);
