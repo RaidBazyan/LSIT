@@ -1,4 +1,4 @@
-package com.list_project.lsit.s3_repositories;
+package com.list_project.lsit.cloud_repositories;
 
 import java.util.*;
 import org.springframework.stereotype.Repository;
@@ -9,12 +9,12 @@ import com.list_project.lsit.Services.StorageService;
 import org.springframework.beans.factory.annotation.Value;
 
 @Repository
-public class WarehouseRepository_s3 {
+public class WarehouseRepository {
     private final StorageService storageService;
     private final ObjectMapper objectMapper;
     private final String prefix;
 
-    public WarehouseRepository_s3(StorageService storageService,
+    public WarehouseRepository(StorageService storageService,
                                  @Value("${gcp.storage.prefix:warehouses/}") String prefix) {
         this.storageService = storageService;
         this.objectMapper = new ObjectMapper();
