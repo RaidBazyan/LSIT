@@ -9,12 +9,12 @@ import com.list_project.lsit.Services.StorageService;
 import org.springframework.beans.factory.annotation.Value;
 
 @Repository
-public class SupplierRepository {
+public class SupplierRepository_s3 {
     private final StorageService storageService;
     private final ObjectMapper objectMapper;
     private final String prefix;
 
-    public SupplierRepository(StorageService storageService,
+    public SupplierRepository_s3(StorageService storageService,
                                 @Value("${gcp.storage.prefix:suppliers/}") String prefix) {
         this.storageService = storageService;
         this.objectMapper = new ObjectMapper();

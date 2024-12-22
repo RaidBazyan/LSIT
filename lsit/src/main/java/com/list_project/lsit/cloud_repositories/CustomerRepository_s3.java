@@ -11,13 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Repository
-public class CustomerRepository {
+public class CustomerRepository_s3 {
     private final StorageService storageService;
     private final ObjectMapper objectMapper;
     private final String prefix;
-    private static final Logger log = LoggerFactory.getLogger(CustomerRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(CustomerRepository_s3.class);
 
-    public CustomerRepository(StorageService storageService, 
+    public CustomerRepository_s3(StorageService storageService, 
                                @Value("${gcp.storage.prefix:customers/}") String prefix) {
         this.storageService = storageService;
         this.objectMapper = new ObjectMapper();
