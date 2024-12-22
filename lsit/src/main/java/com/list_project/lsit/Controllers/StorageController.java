@@ -1,6 +1,6 @@
 package com.list_project.lsit.Controllers;
 
-import com.list_project.lsit.Services.S3Service;
+import com.list_project.lsit.Services.StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,13 +11,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/s3")
+@RequestMapping("/api/storage")
 @Slf4j
-public class S3Controller {
-    private final S3Service s3Service;
+public class StorageController {
+    private final StorageService storageService;
 
-    public S3Controller(S3Service s3Service) {
-        this.s3Service = s3Service;
+    public StorageController(StorageService storageService) {
+        this.storageService = storageService;
     }
 
     @PostMapping("/upload")
@@ -26,7 +26,7 @@ public class S3Controller {
             @RequestParam("path") String path) {
         try {
             String key = path + "/" + file.getOriginalFilename();
-            s3Service.uploadFile(key, file.getBytes());
+            storageService.uploadFile(key, file.getBytes());
             return ResponseEntity.ok("File uploaded successfully: " + key);
         } catch (IOException e) {
             log.error("Error processing file: {}", e.getMessage());
@@ -41,7 +41,7 @@ public class S3Controller {
             @PathVariable String filename) {
         try {
             String key = path + "/" + filename;
-            byte[] content = s3Service.downloadFile(key);
+            byte[] content = storageService.downloadFile(key);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, 
                             "attachment; filename=\"" + filename + "\"")
@@ -58,7 +58,7 @@ public class S3Controller {
             @PathVariable String filename) {
         try {
             String key = path + "/" + filename;
-            s3Service.deleteFile(key);
+            storageService.deleteFile(key);
             return ResponseEntity.ok("File deleted successfully: " + key);
         } catch (Exception e) {
             log.error("Error deleting file: {}", e.getMessage());
