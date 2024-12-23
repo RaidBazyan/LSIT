@@ -3,7 +3,7 @@ package com.list_project.lsit.Models;
 public class WarehouseManager {
     private Long id;
     private String name;
-    private String contact; // Define contact as a String
+    private String contact;
 
     public WarehouseManager() {}
 
