@@ -1,40 +1,68 @@
 package lsit.Controllers;
 
+import lsit.Models.Supplier;
+import lsit.Repositories.SupplierRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import lsit.Models.Supplier;
-import lsit.Repositories.SupplierRepository;
-
+import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping("/supplier")
+@RequestMapping("/suppliers")
 public class SupplierController {
 
     private final SupplierRepository supplierRepository;
 
+    @Autowired
     public SupplierController(SupplierRepository supplierRepository) {
         this.supplierRepository = supplierRepository;
     }
 
-    @PostMapping
-    public ResponseEntity<Supplier> addSupplier(@RequestBody Supplier supplier) {
+    // Create
+    @PostMapping("")
+    public ResponseEntity<Supplier> createSupplier(@RequestBody Supplier supplier) {
         supplierRepository.add(supplier);
         return ResponseEntity.ok(supplier);
     }
 
+    // Read
     @GetMapping("/{id}")
     public ResponseEntity<Supplier> getSupplier(@PathVariable Long id) {
         Supplier supplier = supplierRepository.get(id);
-        if (supplier == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(supplier);
+        return supplier != null ? ResponseEntity.ok(supplier) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping
-    public ResponseEntity<List<Supplier>> listSuppliers() {
-        return ResponseEntity.ok(supplierRepository.list());
+    @GetMapping("/listall")
+    public ResponseEntity<?> listAllSuppliers() {
+        List<Supplier> suppliers = supplierRepository.list();
+        if (suppliers.isEmpty()) {
+            return ResponseEntity.ok(Collections.singletonMap("message", "No suppliers currently stored."));
+        }
+        return ResponseEntity.ok(suppliers);
+    }
+
+    // Update
+    @PutMapping("/{id}")
+    public ResponseEntity<Supplier> updateSupplier(@PathVariable Long id, @RequestBody Supplier updatedSupplier) {
+        Supplier existingSupplier = supplierRepository.get(id);
+        if (existingSupplier == null) {
+            return ResponseEntity.notFound().build();
+        }
+        updatedSupplier.setId(id);
+        supplierRepository.update(updatedSupplier);
+        return ResponseEntity.ok(updatedSupplier);
+    }
+
+    // Delete
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSupplier(@PathVariable Long id) {
+        Supplier existingSupplier = supplierRepository.get(id);
+        if (existingSupplier == null) {
+            return ResponseEntity.notFound().build();
+        }
+        supplierRepository.remove(id);
+        return ResponseEntity.noContent().build();
     }
 }
