@@ -19,8 +19,8 @@ public class CustomerRepository_s3 {
 
     private static final String BUCKET = "lsit-project";
     private static final String PREFIX = "customers/";
-    private static final String ACCESS_KEY = "AKIATG6MGQSAYOUKHH6Q"; 
-    private static final String SECRET_KEY = "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"; 
+    private static final String ACCESS_KEY = ""; 
+    private static final String SECRET_KEY = ""; 
     private final String ENDPOINT_URL = "https://s3.amazonaws.com";
 
     private S3Client s3client;
